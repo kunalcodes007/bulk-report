@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const { db } = require("../config/db");
-
-router.all("/respReport", async (req, res) => {  
+const catchAsyncErrors = require("../Middleware/catchAsyncErrors");
+router.all("/respReport",catchAsyncErrors( async (req, res) => {  
   try {
     let resdata;
     if (req.method === "GET") {
@@ -54,6 +54,6 @@ router.all("/respReport", async (req, res) => {
       error: error.message,
     });
   }
-});
+}));
 
 module.exports = router;
