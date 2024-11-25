@@ -1,0 +1,19 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "157.245.105.3",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "exa",
+            "database": "db_authkey_bulk",
+            "username": "root",
+            "password": "Datagen@it!123",
+            "connectionTimeout": 10
+        }
+    ]
+}
