@@ -2,58 +2,61 @@ const express = require("express");
 const router = express.Router();
 const { db } = require("../config/db");
 const catchAsyncErrors = require("../Middleware/catchAsyncErrors");
-router.all("/respReport",catchAsyncErrors( async (req, res) => {  
-  try {
-    let resdata;
-    if (req.method === "GET") {
-      resdata = req.query;
-    }
 
-    if (req.method === "POST") {
-      resdata = req.body;
-    }
+router.all(
+  "/respReport",
+  catchAsyncErrors(async (req, res) => {
+    try {
+      let resdata;
+      if (req.method === "GET") {
+        resdata = req.query;
+      }
 
-    if (  resdata.method === "respReport") {
-      const query1 = "SELECT * FROM tbl_whatsapp_airtel_resp_incoming";
-      const query2 = "SELECT * FROM tbl_wp_facebook_resp_incoming";
+      if (req.method === "POST") {
+        resdata = req.body;
+      }
 
-      try {
-        const [results1] = await db.promise().query(query1);
-        const [results2] = await db.promise().query(query2);
+      if (resdata.method === "respReport") {
+        const query1 = "SELECT COUNT(*) as whatsappCount FROM tbl_whatsapp_airtel_resp_incoming";
+        const query2 = "SELECT COUNT(*) as facebookCount FROM tbl_wp_facebook_resp_incoming";
 
-        const combinedResults = {
-          whatsapp: results1,
-          facebook: results2,
-        };
+        try {
+          const [results1] = await db.promise().query(query1);
+          const [results2] = await db.promise().query(query2);
 
-        return res.status(200).json({
-          success: true,
-          message: "Data fetched successfully",
-          data: combinedResults,
-        });
-      } catch (err) {
-        console.error("Error executing queries:", err);
-        return res.status(500).json({
+          const counts = {
+            whatsapp: results1[0].whatsappCount,
+            facebook: results2[0].facebookCount,
+          };
+
+          return res.status(200).json({
+            success: true,
+            message: "Counts fetched successfully",
+            data: counts,
+          });
+        } catch (err) {
+          console.error("Error executing queries:", err);
+          return res.status(500).json({
+            success: false,
+            message: "Failed to fetch data",
+            error: err.message,
+          });
+        }
+      } else {
+        return res.status(400).json({
           success: false,
-          message: "Failed to fetch data",
-          error: err.message,
+          message: "Invalid method",
         });
       }
-    } 
-    else {
-      return res.status(400).json({
+    } catch (error) {
+      console.error("Error in request:", error);
+      res.status(500).json({
         success: false,
-        message: "Invalid method",
+        message: "Failed to process request",
+        error: error.message,
       });
     }
-  } catch (error) {
-    console.error("Error in request:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to process request",
-      error: error.message,
-    });
-  }
-}));
+  })
+);
 
 module.exports = router;
