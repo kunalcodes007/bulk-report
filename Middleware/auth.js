@@ -1,4 +1,4 @@
-const { db } = require("../config/db");
+const { db } = require("../config/database");
 
 const auth = (req, res, next) => {
   const { id, token } = req.body;
@@ -8,7 +8,7 @@ const auth = (req, res, next) => {
   }
 
   const query = "SELECT * FROM tbl_users WHERE id = ?";
-  
+
   db.execute(query, [id], (err, results) => {
     if (err) {
       console.error("Database query error:", err);
@@ -29,4 +29,4 @@ const auth = (req, res, next) => {
   });
 };
 
-module.exports =  auth ;
+module.exports = auth;

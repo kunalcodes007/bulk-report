@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { db } = require("../config/db");
+const db = require("../config/databaseconnection");
 const catchAsyncErrors = require("../Middleware/catchAsyncErrors");
 
 router.all(
@@ -23,16 +23,16 @@ router.all(
         const queryPinnacle = "SELECT COUNT(*) as whatsappPinnacleCount FROM tbl_whatsapp_pinnacle";
 
         try {
-          const [queueResults] = await db.promise().query(queryQueue);
-          const [airtelResults] = await db.promise().query(queryAirtel);
-          const [datagenResults] = await db.promise().query(queryDatagen);
-          const [pinnacleResults] = await db.promise().query(queryPinnacle);
+          const queueResults = await db(queryQueue); 
+          const airtelResults = await db(queryAirtel); 
+          const datagenResults = await db(queryDatagen); 
+          const pinnacleResults = await db(queryPinnacle); 
 
           const counts = {
-            whatsappQueue: queueResults[0].whatsappQueueCount,
-            whatsappAirtel: airtelResults[0].whatsappAirtelCount,
-            whatsappDatagen: datagenResults[0].whatsappDatagenCount,
-            whatsappPinnacle: pinnacleResults[0].whatsappPinnacleCount,
+            whatsappQueue: queueResults[0].whatsappQueueCount || 0,
+            whatsappAirtel: airtelResults[0].whatsappAirtelCount || 0,
+            whatsappDatagen: datagenResults[0].whatsappDatagenCount || 0,
+            whatsappPinnacle: pinnacleResults[0].whatsappPinnacleCount || 0,
           };
 
           return res.status(200).json({

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { db } = require("../config/db");
+const db = require("../config/databaseconnection");
 const catchAsyncErrors = require("../Middleware/catchAsyncErrors");
 
 router.all(
@@ -17,18 +17,19 @@ router.all(
       }
 
       if (resdata.method === "respReport") {
-        const query1 = "SELECT COUNT(*) as whatsappCount FROM tbl_whatsapp_airtel_resp_incoming";
-        const query2 = "SELECT COUNT(*) as facebookCount FROM tbl_wp_facebook_resp_incoming";
+        const query1 =
+          "SELECT COUNT(*) as whatsappCount FROM tbl_whatsapp_airtel_resp_incoming";
+        const query2 =
+          "SELECT COUNT(*) as facebookCount FROM tbl_wp_facebook_resp_incoming";
 
         try {
-          const [results1] = await db.promise().query(query1);
-          const [results2] = await db.promise().query(query2);
+          const results1 = await db(query1); 
+          const results2 = await db(query2); 
 
           const counts = {
-            whatsapp: results1[0].whatsappCount,
-            facebook: results2[0].facebookCount,
+            whatsapp: results1[0].whatsappCount || 0,
+            facebook: results2[0].facebookCount || 0,
           };
-
           return res.status(200).json({
             success: true,
             message: "Counts fetched successfully",
